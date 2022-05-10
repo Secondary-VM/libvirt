@@ -1934,6 +1934,7 @@ typedef enum {
     VIR_DOMAIN_METADATA_DESCRIPTION = 0, /* Operate on <description> (Since: v0.9.10) */
     VIR_DOMAIN_METADATA_TITLE       = 1, /* Operate on <title> (Since: v0.9.10) */
     VIR_DOMAIN_METADATA_ELEMENT     = 2, /* Operate on <metadata> (Since: v0.9.10) */
+    VIR_DOMAIN_METADATA_HIERARCHY   = 3, /* Operate on <hierarchy> (Since: v0.9.10) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_METADATA_LAST /* (Since: v0.9.10) */

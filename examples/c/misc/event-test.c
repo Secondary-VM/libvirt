@@ -1038,6 +1038,9 @@ metadataTypeToStr(int status)
     case VIR_DOMAIN_METADATA_TITLE:
         return "title";
 
+    case VIR_DOMAIN_METADATA_HIERARCHY:
+        return "hierarchy";
+
     case VIR_DOMAIN_METADATA_ELEMENT:
         return "element";
 

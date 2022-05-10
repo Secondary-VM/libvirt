@@ -2806,6 +2806,12 @@ struct _virDomainVirtioOptions {
 #define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
 
 
+typedef enum {
+    VIR_DOMAIN_HIERARCHY_STANDARD	= -1,
+    VIR_DOMAIN_HIERARCHY_PRIMARY 	= 0,
+    VIR_DOMAIN_HIERARCHY_SECONDARY 	= 1
+} virDomainHierarchyType;
+
 /*
  * Guest VM main configuration
  *
@@ -2815,6 +2821,7 @@ struct _virDomainVirtioOptions {
 struct _virDomainDef {
     int virtType; /* enum virDomainVirtType */
     int id;
+
     unsigned char uuid[VIR_UUID_BUFLEN];
 
     unsigned char genid[VIR_UUID_BUFLEN];
@@ -2824,6 +2831,9 @@ struct _virDomainDef {
     char *name;
     char *title;
     char *description;
+    int hierarchy; /* -1 std, 0 primary, >1 secondary and id of primary */
+    virDomainObj *parent; //TODO
+
 
     virDomainBlkiotune blkio;
     virDomainMemtune mem;

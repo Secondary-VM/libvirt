@@ -1926,9 +1926,9 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     /* print table header in legacy mode */
     if (optTable) {
         if (optTitle)
-            table = vshTableNew(_("Id"), _("Name"), _("State"), _("Title"), NULL);
+            table = vshTableNew(_("Id"),_("Title"),  _("Name"), _("State"), _("Title"), NULL);
         else
-            table = vshTableNew(_("Id"), _("Name"), _("State"), NULL);
+            table = vshTableNew(_("Id"), _("Type"), _("Name"), _("State"), NULL);
 
         if (!table)
             goto cleanup;
@@ -1961,6 +1961,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                 if (!(title = virshGetDomainDescription(ctl, dom, true, 0)))
                     goto cleanup;
                 if (vshTableRowAppend(table, id_buf,
+				      virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_HIERARCHY, NULL, 0),
+				      //"TEST0",
                                       virDomainGetName(dom),
                                       state == -2 ? _("saved")
                                       : virshDomainStateToString(state),
@@ -1968,6 +1970,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                     goto cleanup;
             } else {
                 if (vshTableRowAppend(table, id_buf,
+				      virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_HIERARCHY, NULL, 0),
+				      //"TEST0",
                                       virDomainGetName(dom),
                                       state == -2 ? _("saved")
                                       : virshDomainStateToString(state),

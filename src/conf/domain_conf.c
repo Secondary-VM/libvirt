@@ -19497,6 +19497,7 @@ virDomainDefControllersParse(virDomainDef *def,
     return 0;
 }
 
+
 static virDomainDef *
 virDomainDefParseXML(xmlXPathContextPtr ctxt,
                      virDomainXMLOption *xmlopt,
@@ -19536,6 +19537,18 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL)) {
         if (virSecurityLabelDefsParseXML(def, ctxt, xmlopt, flags) == -1)
             return NULL;
+    }
+
+    /* PrimaryVM parsing */
+    def->hierarchy = virXPathBoolean("boolean(./primary)", ctxt) - 1;
+
+    /* XXX SecondaryVM parsing TEMPORARY */
+    if (def->hierarchy && virXPathBoolean("boolean(./secondary)", ctxt)) {
+	def->hierarchy = 5;
+	
+    	virXPathInt("string(./secondary/@parent)", ctxt, &def->hierarchy);
+
+        //virXPathULongLong("string(./timeout/@seconds)", ctxt, &src->timeout) == -2)
     }
 
     if (virDomainDefParseMemory(def, ctxt) < 0)
@@ -28012,6 +28025,9 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     virBufferEscapeString(buf, "<description>%s</description>\n",
                           def->description);
 
+    //XXX
+    //virBufferEscapeString(buf, "<hierarchy>%s</hierarchy>\n", def->hierarchy);
+
     if (virXMLFormatMetadata(buf, def->metadata) < 0)
         return -1;
 
@@ -29883,6 +29899,7 @@ virDomainObjGetMetadata(virDomainObj *vm,
 {
     virDomainDef *def;
     char *ret = NULL;
+    char buf[16];
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, NULL);
@@ -29911,6 +29928,17 @@ virDomainObjGetMetadata(virDomainObj *vm,
 
         if (virXMLExtractNamespaceXML(def->metadata, uri, &ret) < 0)
             return NULL;
+        break;
+
+    case VIR_DOMAIN_METADATA_HIERARCHY:
+	if (def->hierarchy == VIR_DOMAIN_HIERARCHY_PRIMARY) {
+        	ret = g_strdup("Primary");
+	} else if (def->hierarchy >= 1) {
+		snprintf(buf, 16, "Secondary of %d", def->hierarchy);
+		ret = g_strdup(buf);
+	} else {
+		ret = g_strdup("Standard");
+	}
         break;
 
     case VIR_DOMAIN_METADATA_LAST:
@@ -29994,6 +30022,18 @@ virDomainDefSetMetadata(virDomainDef *def,
         }
         break;
 
+    case VIR_DOMAIN_METADATA_HIERARCHY:
+
+        if (STREQ_NULLABLE(metadata, "primary"))
+            def->hierarchy = VIR_DOMAIN_HIERARCHY_PRIMARY;
+	else if (STREQ_NULLABLE(metadata, "secondary"))
+            def->hierarchy = atoi(key);
+	else
+            def->hierarchy = VIR_DOMAIN_HIERARCHY_STANDARD;
+
+        break;
+
+
     case VIR_DOMAIN_METADATA_LAST:
         break;
     }
@@ -30018,6 +30058,7 @@ virDomainObjSetMetadata(virDomainObj *vm,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
+
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         return -1;

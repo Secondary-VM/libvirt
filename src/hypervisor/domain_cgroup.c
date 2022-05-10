@@ -25,6 +25,7 @@
 #include "util/virnuma.h"
 #include "virlog.h"
 #include "virutil.h"
+#include "libvirt-secvm.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 VIR_LOG_INIT("domain.cgroup");
@@ -359,6 +360,12 @@ virDomainCgroupInitCgroup(const char *prefix,
 
     if (!virCgroupAvailable())
         return 0;
+
+    if(vm->def->hierarchy > 0) {
+	//TODO Hardcoded, should get parent name somewhere
+	//virDomainPtr parent = virDomainLookupByID(vm->conn, vm->def->hierarchy)
+	return cgrpSetup("PriVM1", vm->def->hierarchy, vm->pid);
+    }
 
     g_clear_pointer(cgroup, virCgroupFree);
 

@@ -51,6 +51,7 @@
 #include "viruri.h"
 #include "vsh-table.h"
 #include "virenum.h"
+#include "libvirt-secvm.h"
 #include "virutil.h"
 
 enum virshAddressType {
@@ -4140,6 +4141,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     }
 
  started:
+
     vshPrintExtra(ctl, _("Domain '%s' started\n"),
                   virDomainGetName(dom));
 #ifndef WIN32
@@ -8189,6 +8191,9 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (console)
         cmdRunConsole(ctl, dom, NULL, 0);
 #endif
+    if (!strcmp(virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_HIERARCHY, NULL, 0), "Primary"))
+        virSecvmVsockOpen(dom);
+
     return true;
 }
 
@@ -8285,6 +8290,9 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
+    if (!strcmp(virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_HIERARCHY, NULL, 0), "Primary"))
+    	virSecvmVsockClose(dom);
+
     if (vshCommandOptBool(cmd, "graceful"))
        flags |= VIR_DOMAIN_DESTROY_GRACEFUL;
     if (vshCommandOptBool(cmd, "remove-logs"))
@@ -8301,6 +8309,7 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     }
 
     vshPrintExtra(ctl, _("Domain '%s' destroyed\n"), name);
+
     return true;
 }
 

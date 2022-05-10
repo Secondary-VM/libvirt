@@ -3271,6 +3271,13 @@ virSecretLookupFormatSecret;
 virSecretLookupParseSecret;
 
 
+# util/virsecvm.h
+virSecvmVsockOpen;
+virSecvmVsockClose;
+virSecvmSpawn;
+virSecvmDestroy;
+
+
 # util/virsecureerase.h
 virSecureErase;
 virSecureEraseString;

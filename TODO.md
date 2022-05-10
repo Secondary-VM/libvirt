@@ -1,0 +1,8 @@
+- Add install script to move secVM template into position
+- Create empty ext4 file on primaryVM creation
+- Attach/Detatch disk to primaryVM
+- Remove hardcoding
+	- primaryVM id into secVM xml
+	- primaryVM name when adding secVM into priVM cgroup
+	- Solution to both would be to add a pointer to priVM into secVM structure
+- Figure out why from daemon you calling "create" fails

@@ -669,6 +669,7 @@ VIR_ENUM_IMPL(virshEventMetadataChangeType,
               VIR_DOMAIN_METADATA_LAST,
               N_("description"),
               N_("title"),
+              N_("hierarchy"),
               N_("element"));
 
 static void

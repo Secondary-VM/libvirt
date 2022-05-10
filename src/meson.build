@@ -286,6 +286,7 @@ driver_sources = files(
   'libvirt-nodedev.c',
   'libvirt-nwfilter.c',
   'libvirt-secret.c',
+  'libvirt-secvm.c',
   'libvirt-storage.c',
   'libvirt-stream.c',
   )
@@ -297,6 +298,7 @@ driver_headers = [
   'driver-nodedev.h',
   'driver-nwfilter.h',
   'driver-secret.h',
+  'libvirt-secvm.h',
   'driver-state.h',
   'driver-storage.h',
   'driver-stream.h',
